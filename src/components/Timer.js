@@ -10,19 +10,21 @@ const Timer = (props) => {
 
     const end_time = props.endDate;
 
-    const [ isPause , setPause ] = useState(true);
-
+    const [isPause, setPause] = useState(true);
+    let timeNow = Date.now();
+    const [initalTime, setInitalTime] = useState((Date.parse(end_time) -timeNow) / 1000);
     return (
         <View style={styles.timerContainer}>
             <CountDown
-                until={(Date.parse(end_time) - Date.now()) / 1000}
+                id={props.id.toString()}
+                until={initalTime}
                 onFinish={() => alert('finished')}
                 timeLabelStyle={{ fontSize: 10 }}
-                running={props.isPause}
+                running={isPause}
                 size={20}
             />
             {
-                 console.log("isPause ",isPause)
+                console.log("isPause ", isPause)
             }
             <TouchableOpacity
                 style={styles.buttonStyle}
@@ -50,7 +52,7 @@ const styles = StyleSheet.create({
         borderWidth: 1.2,
         borderColor: "black",
         height: 50,
-        marginLeft:10
+        marginLeft: 10
     }
 })
 

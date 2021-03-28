@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
     View,
     Text,
@@ -16,10 +16,7 @@ import { DELETE_TASK } from '../GraphQL/Mutations';
 const TimeTracker = ({ trackerDetails, refetch }) => {
     const navigation = useNavigation();
     const tracker = trackerDetails.item;
-    // const [paused, setPause] = useState(false);
-    const [delete_tasks_by_pk, { error, loading, data }] = useMutation(DELETE_TASK);
-
-
+    const [delete_tasks_by_pk, { error, loading }] = useMutation(DELETE_TASK);
     const deleteTask = () => {
         delete_tasks_by_pk({
             variables: {
@@ -32,22 +29,22 @@ const TimeTracker = ({ trackerDetails, refetch }) => {
         <>
             <View style={styles.container}>
                 <Text style={styles.titleText}>{tracker.title}</Text>
-                {/* <View style={styles.tagsContainer}>
+                <View style={styles.tagsContainer}>
                     {
                         tracker.tags.map((e) => {
-                            return <View style={styles.tagStyle}>
+                            return <View style={styles.tagStyle} key={e.id}>
                                 <Text>{e.name}</Text>
                             </View>
                         })
                     }
-                </View> */}
+                </View>
                 <View >
                     {
                         (Date.parse(tracker.start_time) >= Date.now()) ? <View style={styles.yetToStart}>
                             <Text style={styles.yetToStartText}>Task Yet to Start</Text>
                         </View>
                             :
-                            <Timer endDate={tracker.end_time} />
+                            <Timer endDate={tracker.end_time} id={tracker.id} />
                     }
                 </View>
                 <View style={styles.imageContainer}>

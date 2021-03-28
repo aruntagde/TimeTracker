@@ -8,12 +8,10 @@ import {
     ActivityIndicator,
     StyleSheet,
     TouchableOpacity,
-    Button,
-    RefreshControlBase,
-    Dimensions
+    ToastAndroid,
+    Platform
 } from 'react-native';
-import Tags from "react-native-tags";
-import { useQuery, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { CREATE_TASK, UPDATE_TASK_BY_ID } from '../GraphQL/Mutations';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -49,7 +47,7 @@ const AddEditTask = () => {
 
     const [
         [insert_tasks_one, { loading: createTaskLoading, data: createTaskData }],
-        [update_tasks_by_pk, { loading: updateTaskLoading, error: updateErr, data: updateTaskData }],
+        [update_tasks_by_pk, { loading: updateTaskLoading, data: updateTaskData }],
     ] = queryMultiple()
 
 
@@ -68,6 +66,14 @@ const AddEditTask = () => {
 
     useEffect(() => {
         if (createTaskData || updateTaskData) {
+            if (Platform.OS == "android") {
+                let msg = !isEdit ? "Created Successfully" : "Updated SuccessFully"
+                ToastAndroid.showWithGravity(
+                    msg,
+                    ToastAndroid.LONG,
+                    ToastAndroid.CENTER
+                );
+            }
             navigation.goBack();
             refetch()
         }
@@ -75,44 +81,47 @@ const AddEditTask = () => {
 
     const createUpdateTask = () => {
 
-        let taskTags = [];
-        tags.tagsArray.forEach((e) => {
-            let data = {
-                tag: {
-                    data: {
-                        name: e
-                    }
-                }
-            }
-            taskTags.push(data);
-        })
-
-        if (isEdit) {
-            update_tasks_by_pk({
-                variables: {
-                    _id: editData.id,
-                    _set: {
-                        title: title,
-                        start_time: startDate,
-                        end_time: endDate
-                    }
-                }
-            })
+        if (startDate > endDate) {
+            alert("End Time should be greater than Start Time ..!!")
         } else {
-
-            insert_tasks_one({
-                variables: {
-                    object: {
-                        title: title,
-                        start_time: startDate,
-                        end_time: endDate,
-                        task_tags: {
-                            data: taskTags
+            let taskTags = [];
+            tags.tagsArray.forEach((e) => {
+                let data = {
+                    tag: {
+                        data: {
+                            name: e
                         }
                     }
                 }
+                taskTags.push(data);
             })
 
+            if (isEdit) {
+                update_tasks_by_pk({
+                    variables: {
+                        _id: editData.id,
+                        _set: {
+                            title: title,
+                            start_time: startDate,
+                            end_time: endDate
+                        }
+                    }
+                })
+            } else {
+                insert_tasks_one({
+                    variables: {
+                        object: {
+                            title: title,
+                            start_time: startDate,
+                            end_time: endDate,
+                            task_tags: {
+                                data: taskTags
+                            }
+                        }
+                    }
+                })
+
+            }
         }
 
     }

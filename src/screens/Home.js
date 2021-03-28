@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
     View,
     Text,
@@ -7,14 +7,11 @@ import {
     FlatList,
     StyleSheet,
     TouchableOpacity,
-    Button
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useQuery, useMutation } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { LOAD_TASKS } from '../GraphQL/Querys';
-import { DELETE_TASK } from '../GraphQL/Mutations';
 import TimeTracker from '../components//TimeTracker';
-
 
 const Home = () => {
     const navigation = useNavigation();
@@ -23,7 +20,6 @@ const Home = () => {
     const _renderItem = (item) => {
         return <TimeTracker trackerDetails={item} refetch={refetch} />;
     }
-
 
     return (
         <>
